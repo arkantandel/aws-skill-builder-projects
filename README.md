@@ -46,50 +46,6 @@ A *three-tier AWS architecture* separates your application into:
 
 ---
 
-# 2. Architecture Diagram (GitHub-Safe Mermaid)
-
-This diagram renders correctly on GitHub.
-
-```mermaid
-flowchart TB
-
-subgraph VPC["VPC"]
-    subgraph AZA["AZ A"]
-        ALB_A((ALB))
-        FE_A[Frontend EC2]
-        BE_A[Backend EC2]
-        DB_A[(DB A)]
-    end
-
-    subgraph AZB["AZ B"]
-        ALB_B((ALB))
-        FE_B[Frontend EC2]
-        BE_B[Backend EC2]
-        DB_B[(DB B)]
-    end
-
-    subgraph AZC["AZ C"]
-        ALB_C((ALB))
-        FE_C[Frontend EC2]
-        BE_C[Backend EC2]
-        DB_C[(DB C)]
-    end
-end
-
-ALB_A --> FE_A
-ALB_B --> FE_B
-ALB_C --> FE_C
-
-FE_A --> BE_A
-FE_B --> BE_B
-FE_C --> BE_C
-
-BE_A --> DB_A
-BE_B --> DB_B
-BE_C --> DB_C
-
-
----
 
 3. Prerequisites
 
