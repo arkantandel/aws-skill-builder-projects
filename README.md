@@ -148,111 +148,64 @@ flowchart TB
     BE_SRV_B --> DB_B
 ```
 
-project_steps:
-  - step: "Create VPC"
-    details: "CIDR block 10.0.0.0/16"
+## 📝 Project Steps (Expanded Format)
 
-  - step: "Create Subnets"
-    web_public:
-      - public-web-subnet-a
-      - public-web-subnet-b
-      - public-web-subnet-c
-    web_private:
-      - private-web-subnet-a
-      - private-web-subnet-b
-      - private-web-subnet-c
-    app_private:
-      - private-app-subnet-a
-      - private-app-subnet-b
-      - private-app-subnet-c
-    db_private:
-      - private-db-subnet-a
-      - private-db-subnet-b
-      - private-db-subnet-c
+### Phase 1: VPC and Subnet Setup 🧱
+This phase establishes the foundational network environment, ensuring resources are segregated for security and availability.
 
-  - step: "Create Route Tables"
-    route_tables:
-      - Web Public Route Table
-      - Web Private Route Table (1a, 1b, 1c)
-      - App Private Route Table (1a, 1b, 1c)
-      - DB Private Route Table (1a, 1b, 1c)
+1.  **Create VPC:**
+    * **CIDR:** $10.0.0.0/16$
+2.  **Create Subnets (3 AZs: A, B, C for future scaling):**
+    * **Public Subnets (Web Tier):** `public-web-subnet-a`, `public-web-subnet-b`, `public-web-subnet-c`.
+    * **Private Web Subnets (Application Tier/EC2 Hosts):** `private-web-subnet-a`, `private-web-subnet-b`, `private-web-subnet-c`.
+    * **Private App Subnets (Application Tier/EC2 Hosts):** `private-app-subnet-a`, `private-app-subnet-b`, `private-app-subnet-c`.
+    * **Private DB Subnets (Database Tier):** `private-db-subnet-a`, `private-db-subnet-b`, `private-db-subnet-c`.
 
-  - step: "Associate Route Tables with Subnets"
+---
 
-  - step: "Create Internet Gateway"
-    action:
-      - Create IGW
-      - Attach IGW to VPC
+### Phase 2: Connectivity & Routing 🛣️
+This phase configures how traffic enters the VPC (IGW) and how private resources can access the internet securely (NAT Gateway).
 
-  - step: "Create NAT Gateway"
-    action:
-      - Create NAT in public subnet
-      - Allocate Elastic IP
+3.  **Create Internet Gateway (IGW):**
+    * Create IGW and attach it to the VPC.
+4.  **Create NAT Gateway:**
+    * Allocate an **Elastic IP (EIP)**.
+    * Create **NAT Gateway** in **one** of the **Public Subnets** (e.g., `public-web-subnet-a`).
+5.  **Create Route Tables (RT):**
+    * **Public Route Table:** Directs $0.0.0.0/0$ to the **Internet Gateway (IGW)**.
+    * **Private App Route Table:** Directs $0.0.0.0/0$ to the **NAT Gateway**.
+    * **Private DB Route Table:** Has **no** default route ($0.0.0.0/0$) to ensure complete isolation.
+6.  **Associate Route Tables with Subnets:**
+    * Associate **Public RT** with **Public Subnets**.
+    * Associate **Private App RT** with **Private App Subnets**.
+    * Associate **Private DB RT** with **Private DB Subnets**.
 
-  - step: "Add Routes"
-    public_routes:
-      - "0.0.0.0/0 → IGW"
-    private_routes:
-      - "0.0.0.0/0 → NAT Gateway"
+---
 
-  - step: "Create Security Groups"
-    security_groups:
-      frontend_alb_sg:
-        - allow HTTP 80 from anywhere
-      frontend_server_sg:
-        - allow HTTP 80 from frontend ALB
-      backend_alb_sg:
-        - allow HTTP 80 from frontend servers
-      backend_server_sg:
-        - allow HTTP 80 from backend ALB
-      database_sg:
-        - allow DB port only from backend servers
+### Phase 3: Security Groups and EC2 Setup 💻
+This phase defines the network security boundaries and prepares the compute resources using Auto Scaling for resilience.
 
-components_used:
-  networking:
-    - VPC
-    - Public Subnets
-    - Private Web Subnets
-    - Private App Subnets
-    - Private DB Subnets
-    - Route Tables
-    - Internet Gateway
-    - NAT Gateway
-  compute:
-    - EC2 Frontend Servers
-    - EC2 Backend Servers
-    - Frontend ALB
-    - Backend ALB
-  database:
-    - RDS Multi-AZ
-  security:
-    - Security Groups
-    - IAM Roles
-    - NACL (optional)
+7.  **Create Security Groups (SG):**
+    * **`frontend_alb_sg`:** Allow **HTTP 80** from $0.0.0.0/0$ (Internet).
+    * **`frontend_server_sg`:** Allow **HTTP 80** only from **`frontend_alb_sg`**.
+    * **`backend_alb_sg`:** Allow **HTTP 80** only from **`frontend_server_sg`**.
+    * **`backend_server_sg`:** Allow **HTTP 80** only from **`backend_alb_sg`**.
+    * **`database_sg`:** Allow DB Port (e.g., $3306$ for MySQL) only from **`backend_server_sg`**.
+8.  **EC2 Launch Templates and Auto Scaling:**
+    * Create **Launch Templates** for Frontend and Backend servers (including necessary **IAM roles**).
+    * Create **Auto Scaling Groups (ASG)** for:
+        * **Frontend Servers:** Use Private Web Subnets/Public Web Subnets (depending on design).
+        * **Backend Servers:** Use Private App Subnets.
 
-learning_outcomes:
-  - Multi-AZ VPC design
-  - Subnet tiering & separation
-  - NAT vs IGW routing
-  - ALB load balancing flows
-  - Backend communication logic
-  - RDS Multi-AZ reliability
-  - AWS security best practices
+---
 
-aws-skill-builder-projects/
-├── three-tier-architecture/
-│   ├── README.md
-│   ├── diagrams/
-│   │   └── architecture.png
-│   ├── terraform/
-│   ├── cloudformation/
-│   └── notes/
-└── future-projects/
+### Phase 4: Load Balancers and Database 💾
+This phase connects the tiers using ALBs and establishes the highly available database.
 
-future_enhancements:
-  - Terraform automation
-  - CloudFormation templates
-  - Auto Scaling
-  - CloudFront + WAF
-  - CloudWatch monitoring
-  - CI/CD Pipeline
+9.  **Create Application Load Balancers (ALB):**
+    * **Frontend ALB:** Place in **Public Subnets**. Target Group is the Frontend Server ASG.
+    * **Backend ALB:** Place in **Private App Subnets**. Target Group is the Backend Server ASG.
+10. **Create RDS Multi-AZ Database:**
+    * Create a **DB Subnet Group** using the **Private DB Subnets**.
+    * Launch the RDS instance (e.g., MySQL, PostgreSQL) into the DB Subnet Group, enabling **Multi-AZ deployment**.
+    
