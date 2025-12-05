@@ -286,6 +286,77 @@ flowchart TB
 * **High Availability & Redundancy Practices:** Utilizing **ASG**, **Multi-AZ RDS**, and multiple subnets.
 * **AWS Security Best Practices:** Implementing proper **ingress/egress rules** via Security Groups.
 
+```mermaid
+flowchart TB
+
+    %% ============================
+    %% VPC + Multi-AZ Design
+    %% ============================
+    subgraph VPC[VPC - Multi AZ High Availability]
+        direction TB
+
+        subgraph AZ1[Availability Zone 1]
+            PUB1[Public Subnet 1]
+            APP1[Private App Subnet 1]
+            DB1[Private DB Subnet 1]
+        end
+
+        subgraph AZ2[Availability Zone 2]
+            PUB2[Public Subnet 2]
+            APP2[Private App Subnet 2]
+            DB2[Private DB Subnet 2]
+        end
+    end
+
+
+    %% ============================
+    %% Internet + Routing Logic
+    %% ============================
+    INTERNET((Internet)) --> IGW[Internet Gateway]
+    PUB1 --> IGW
+    PUB2 --> IGW
+
+    APP1 --> NAT[NAT Gateway]
+    APP2 --> NAT
+
+
+    %% ============================
+    %% ALB → EC2 → Backend Flow
+    %% ============================
+    IGW --> ALB[Application Load Balancer<br>Public Subnets (Multi-AZ)]
+
+    ALB --> FE_TG[Frontend Target Group]
+    FE_TG --> FE_ASG[Frontend Auto Scaling Group]
+    FE_ASG --> FE_EC2[Frontend EC2 Instances]
+
+
+    %% ============================
+    %% Backend Tier Flow
+    %% ============================
+    FE_EC2 --> BE_TG[Backend Target Group]
+    BE_TG --> BE_ASG[Backend Auto Scaling Group]
+    BE_ASG --> BE_EC2[Backend EC2 Instances]
+
+
+    %% ============================
+    %% Security Groups: Least Privilege
+    %% ============================
+    INTERNET -. 80 .-> ALB_SG[frontend_alb_sg]
+    ALB_SG --> FE_SG[frontend_server_sg]
+    FE_SG --> BE_ALB_SG[backend_alb_sg]
+    BE_ALB_SG --> BE_SG[backend_server_sg]
+    BE_SG -. 3306 .-> DB_SG[database_sg]
+
+
+    %% ============================
+    %% Multi-AZ RDS Layer
+    %% ============================
+    BE_EC2 --> DB_SG
+    DB_SG --> RDS[(RDS Database<br>Multi-AZ)]
+    RDS --> DB1
+    RDS --> DB2
+```
+
 ## 📁 Folder Structure
 
 | Folder / File           | Description |
