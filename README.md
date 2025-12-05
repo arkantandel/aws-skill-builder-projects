@@ -1,105 +1,80 @@
+
+
 # Three-Tier Architecture on AWS
 
-This README provides a complete, step-by-step guide for deploying a Highly Available Multi-AZ Three-Tier Architecture on AWS. It includes VPC, subnets, route tables, NAT, IGW, EC2 front-end, EC2 backend, ALBs, RDS Database, Launch Templates, and Auto Scaling Groups.
+This repository contains a complete guide to building a *Highly Available Multi-AZ Three-Tier Architecture* on AWS using VPC, Subnets, Route Tables, NAT Gateway, Internet Gateway, EC2, ALB, Auto Scaling, and RDS.
 
 ---
 
 ## Table of Contents
 1. Overview  
-2. Mermaid Architecture Diagram  
+2. Architecture Diagram (GitHub-Safe Mermaid)  
 3. Prerequisites  
 4. High-Level Steps  
 5. Step-by-Step Deployment  
 6. AWS CLI Commands  
-7. Production Checklist  
-8. Troubleshooting  
-9. References  
+7. Security Groups Overview  
+8. Auto Scaling Overview  
+9. Troubleshooting  
+10. Production Checklist  
+11. References  
 
 ---
 
 # 1. Overview
 
-A complete cloud architecture following 3-tier separation:
+A *three-tier AWS architecture* separates your application into:
 
-### Web Tier  
-- Public-facing Application Load Balancer  
-- Frontend EC2 private servers  
-- Hosted in *public + private-web subnets*
+### Web Tier
+- Internet-facing Application Load Balancer  
+- Frontend EC2 servers  
+- Public + private web subnets  
 
-### Application Tier  
-- Backend EC2  
-- Hosted in *private-app subnets*
+### Application Tier
+- Backend application EC2 servers  
+- Private app subnets  
 
-### Database Tier  
-- Multi-AZ RDS  
-- Hosted in *private-db subnets*
+### Database Tier
+- Amazon RDS Multi-AZ  
+- Private DB subnets  
 
-Benefits:  
+### Benefits
 - High Availability  
-- Secure Network Segmentation  
-- Auto Scaling  
-- Multi-AZ Fault Tolerance  
+- Scalability (Auto Scaling Groups)  
+- Security Isolation  
+- Multi-AZ resilience  
 
 ---
 
-# 2. Mermaid Architecture Diagram
+# 2. Architecture Diagram (GitHub-Safe Mermaid)
+
+This diagram renders correctly on GitHub.
 
 ```mermaid
 flowchart TB
 
-subgraph VPC["VPC: 10.0.0.0/16"]
-direction TB
-
-    %% ------------------- AZ A -------------------
-    subgraph AZA["Availability Zone A"]
-        subgraph PUBA["Public Web Subnet A"]
-            ALB_A((ALB))
-        end
-        subgraph PWA["Private Web Subnet A"]
-            FE_A[Frontend EC2]
-        end
-        subgraph APA["Private App Subnet A"]
-            BE_A[Backend EC2]
-        end
-        subgraph DBA["Private DB Subnet A"]
-            DB_A[(RDS Primary)]
-        end
+subgraph VPC["VPC"]
+    subgraph AZA["AZ A"]
+        ALB_A((ALB))
+        FE_A[Frontend EC2]
+        BE_A[Backend EC2]
+        DB_A[(DB A)]
     end
 
-    %% ------------------- AZ B -------------------
-    subgraph AZB["Availability Zone B"]
-        subgraph PUBB["Public Web Subnet B"]
-            ALB_B((ALB))
-        end
-        subgraph PWB["Private Web Subnet B"]
-            FE_B[Frontend EC2]
-        end
-        subgraph APB["Private App Subnet B"]
-            BE_B[Backend EC2]
-        end
-        subgraph DBB["Private DB Subnet B"]
-            DB_B[(RDS Standby)]
-        end
+    subgraph AZB["AZ B"]
+        ALB_B((ALB))
+        FE_B[Frontend EC2]
+        BE_B[Backend EC2]
+        DB_B[(DB B)]
     end
 
-    %% ------------------- AZ C -------------------
-    subgraph AZC["Availability Zone C"]
-        subgraph PUBC["Public Web Subnet C"]
-            ALB_C((ALB))
-        end
-        subgraph PWC["Private Web Subnet C"]
-            FE_C[Frontend EC2]
-        end
-        subgraph APC["Private App Subnet C"]
-            BE_C[Backend EC2]
-        end
-        subgraph DBC["Private DB Subnet C"]
-            DB_C[(RDS Replica)]
-        end
+    subgraph AZC["AZ C"]
+        ALB_C((ALB))
+        FE_C[Frontend EC2]
+        BE_C[Backend EC2]
+        DB_C[(DB C)]
     end
 end
-
-%% ---------------- Connections ----------------
 
 ALB_A --> FE_A
 ALB_B --> FE_B
@@ -113,10 +88,6 @@ BE_A --> DB_A
 BE_B --> DB_B
 BE_C --> DB_C
 
-%% Multi-AZ DB arrows (GitHub-safe version)
-DB_A --> DB_B
-DB_B --> DB_C
-DB_C --> DB_A
 
 ---
 
@@ -124,15 +95,13 @@ DB_C --> DB_A
 
 AWS Account
 
-AWS CLI Installed (aws configure)
+AWS CLI Installed
 
-IAM permissions
+IAM admin or power-user permissions
 
 SSH Key Pair
 
 Basic Linux knowledge
-
-Understanding of ALB, EC2, RDS
 
 
 
@@ -143,43 +112,49 @@ Understanding of ALB, EC2, RDS
 1. Create VPC
 
 
-2. Create Web / App / DB subnets
+2. Create public / private subnets
 
 
 3. Create route tables
 
 
-4. Create IGW
+4. Create Internet Gateway
 
 
-5. Create NAT gateway
+5. Create NAT Gateway
 
 
-6. Add routing
+6. Add routes
 
 
 7. Create security groups
 
 
-8. Create database subnet group
+8. Create DB subnet group
 
 
-9. Create RDS DB (Multi-AZ)
+9. Launch RDS
 
 
-10. Create ALB + target groups
+10. Create Frontend ALB
 
 
-11. Create AMIs (frontend/backend)
+11. Create Backend ALB
 
 
-12. Create Launch Templates
+12. Create Frontend AMI
 
 
-13. Create Auto Scaling Groups
+13. Create Backend AMI
 
 
-14. Final Testing
+14. Create Launch Templates
+
+
+15. Create Auto Scaling Groups
+
+
+16. Test application
 
 
 
@@ -200,7 +175,7 @@ CIDR: 10.0.0.0/16
 
 Step 2: Create Subnets
 
-Public Web Subnets
+Public Subnets
 
 public-web-subnet-a
 
@@ -209,7 +184,7 @@ public-web-subnet-b
 public-web-subnet-c
 
 
-Private Web Subnets (Frontend EC2)
+Private Web Subnets (Frontend)
 
 private-web-subnet-a
 
@@ -218,7 +193,7 @@ private-web-subnet-b
 private-web-subnet-c
 
 
-Private App Subnets (Backend EC2)
+Private App Subnets (Backend)
 
 private-app-subnet-a
 
@@ -239,17 +214,22 @@ private-db-subnet-c
 
 ---
 
-Step 3: Create Route Tables
+Step 3: Route Tables
 
-Public → IGW
+Public Route Table
 
-Private → NAT GW
+0.0.0.0/0 → IGW
+
+
+Private Route Table
+
+0.0.0.0/0 → NAT Gateway
 
 
 
 ---
 
-Step 4: Create Internet Gateway
+Step 4: Internet Gateway
 
 Attach IGW to VPC.
 
@@ -258,235 +238,129 @@ Attach IGW to VPC.
 
 Step 5: NAT Gateway
 
-Place NAT in public subnet.
+Create NAT in a public subnet.
 
 
 ---
 
-Step 6: Add Routing
+Step 6: Routing
 
 Subnet Type	Route
 
 Public	0.0.0.0/0 → IGW
-Private	0.0.0.0/0 → NAT
+Private	0.0.0.0/0 → NAT GW
 
 
 
 ---
 
-Step 7: Security Groups
+7. Security Groups Overview
 
-ALB SG
+Frontend ALB SG
 
-Allow:
-
-80 / 443 from internet
+Allow: 80 / 443 from internet
 
 
-Frontend SG
+Frontend EC2 SG
 
-Allow:
-
-80 / 443 from ALB
+Allow: 80/443 from ALB SG
 
 
-Backend SG
+Backend EC2 SG
 
-Allow:
-
-8080 from Frontend
+Allow: backend port (e.g., 8080) from Frontend SG
 
 
 DB SG
 
-Allow:
-
-3306 from Backend
+Allow: DB port (3306 / 5432) from Backend SG
 
 
 
 ---
 
-Step 8: Create DB Subnet Group
+8. Auto Scaling Overview
 
-Add all 3 DB subnets.
+Frontend Auto Scaling Group
 
+Uses private web subnets
 
----
-
-Step 9: Create RDS Database (Multi-AZ)
-
-Engine Example:
-
-MySQL
-
-PostgreSQL
+Attached to frontend target group
 
 
+Backend Auto Scaling Group
 
----
+Uses private app subnets
 
-Step 10: Create Frontend ALB
-
-Create:
-
-Listener (80)
-
-Target Group
+Attached to backend target group
 
 
 
 ---
 
-Step 11: Create Backend ALB
+9. Troubleshooting
 
-Create:
+ALB shows “Unhealthy”
 
-Listener (8080)
-
-Target Group
-
-
-
----
-
-Step 12: Create AMIs
-
-Frontend AMI
-
-sudo yum install nginx git -y
-
-Backend AMI
-
-sudo yum install php httpd mysql git -y
-
-
----
-
-Step 13: Create Launch Templates
-
-Include:
-
-AMI ID
-
-Instance type
-
-Security group
-
-UserData
-
-
-
----
-
-Step 14: Create Auto Scaling Groups
-
-Attach:
-
-Subnets
-
-Target Groups
-
-Policies
-
-
-
----
-
-Step 15: Test
-
-Open ALB DNS
-
-Ensure frontend reaches backend
-
-Ensure backend reaches DB
-
-
-
----
-
-6. AWS CLI Commands
-
-VPC
-
-aws ec2 create-vpc --cidr-block 10.0.0.0/16
-
-Subnet
-
-aws ec2 create-subnet --vpc-id <VPC_ID> --cidr-block 10.0.0.0/20
-
-IGW
-
-aws ec2 create-internet-gateway
-aws ec2 attach-internet-gateway --vpc-id <VPC_ID> --internet-gateway-id <IGW_ID>
-
-NAT
-
-aws ec2 create-nat-gateway --subnet-id <PUBLIC_SUBNET> --allocation-id <EIP_ID>
-
-Target Group
-
-aws elbv2 create-target-group --name frontend-tg --protocol HTTP --port 80 --vpc-id <VPC_ID>
-
-
----
-
-7. Production Checklist
-
-[x] VPC created
-
-[x] All subnets created
-
-[x] IGW working
-
-[x] NAT working
-
-[x] RDS accessible only from backend
-
-[x] ALB healthy
-
-[x] ASG working
-
-[x] Security groups correct
-
-
-
----
-
-8. Troubleshooting
-
-ALB Unhealthy?
-
-App not running
-
-Wrong security group
+Wrong SG
 
 Wrong port
 
-
-Backend cannot reach DB?
-
-DB SG missing inbound rule
+Application not running
 
 
-EC2 cannot reach internet?
+Backend cannot reach DB
 
-NAT or route table incorrect
+DB SG does not allow backend SG
+
+
+EC2 has no internet
+
+NAT not working
+
+Wrong route table
+
+
+
+---
+
+10. Production Checklist
+
+[x] VPC created
+
+[x] Subnets created across AZs
+
+[x] IGW attached
+
+[x] NAT Gateway running
+
+[x] Route tables configured
+
+[x] Security groups correct
+
+[x] ALB healthy
+
+[x] Backend reachable
+
+[x] RDS reachable from backend only
+
+[x] ASG scaling correctly
 
 
 
 ---
 
-9. References
+11. References
 
-AWS VPC Docs
+AWS VPC Documentation
 
-AWS EC2 Docs
+AWS EC2 Documentation
 
-AWS ELB Docs
+AWS RDS Documentation
 
-AWS RDS Docs
+AWS ALB Documentation
 
 
 
 ---
+
