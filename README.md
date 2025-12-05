@@ -228,7 +228,7 @@ This phase connects the tiers using ALBs and establishes the highly available da
     * Create a **DB Subnet Group** using the **Private DB Subnets**.
     * Launch the RDS instance (e.g., MySQL, PostgreSQL) into the DB Subnet Group, enabling **Multi-AZ deployment**.
    
-      ```mermaid
+```mermaid
 flowchart TB
 
     %% ---------------------------
@@ -256,9 +256,10 @@ flowchart TB
     %% ---------------------------
     BE_EC2 --> RDS[(RDS Database<br>Multi-AZ Enabled)]
 ```
-```
-   
-      ## ⚒️ Components Used
+
+
+
+## ⚒️ Components Used
 
 | Category | Component | Placement/Configuration |
 | :--- | :--- | :--- |
