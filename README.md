@@ -98,56 +98,6 @@ flowchart TB
 
 ---
 
-## 📊 Mermaid Diagram (Symbolic)
-```mermaid
-flowchart TB
-    subgraph VPC["VPC (10.0.0.0/16)"]
-        subgraph AZA["AZ A"]
-            PWA["public-web-subnet-a"]
-            PVA["private-web-subnet-a"]
-            PAA["private-app-subnet-a"]
-            PDA["private-db-subnet-a"]
-
-            FE_SRV_A["Frontend A"]
-            BE_SRV_A["Backend A"]
-            DB_A["DB-A (AZ-A)"]
-        end
-
-        subgraph AZB["AZ B"]
-            PWB["public-web-subnet-b"]
-            PVB["private-web-subnet-b"]
-            PAB["private-app-subnet-b"]
-            PDB["private-db-subnet-b"]
-
-            FE_SRV_B["Frontend B"]
-            BE_SRV_B["Backend B"]
-            DB_B["DB-B (AZ-B)"]
-        end
-
-        subgraph AZC["AZ C"]
-            PWC["public-web-subnet-c"]
-            PVC["private-web-subnet-c"]
-            PAC["private-app-subnet-c"]
-            PDC["private-db-subnet-c"]
-        end
-
-        ALB_F["Frontend ALB"]
-        ALB_B["Backend ALB"]
-    end
-
-    ALB_F --> FE_SRV_A
-    ALB_F --> FE_SRV_B
-
-    FE_SRV_A --> ALB_B
-    FE_SRV_B --> ALB_B
-
-    ALB_B --> BE_SRV_A
-    ALB_B --> BE_SRV_B
-
-    BE_SRV_A --> DB_A
-    BE_SRV_B --> DB_B
-```
-
 ## 📝 Project Steps (Expanded Format)
 
 ### Phase 1: VPC and Subnet Setup 🧱
@@ -208,4 +158,22 @@ This phase connects the tiers using ALBs and establishes the highly available da
 10. **Create RDS Multi-AZ Database:**
     * Create a **DB Subnet Group** using the **Private DB Subnets**.
     * Launch the RDS instance (e.g., MySQL, PostgreSQL) into the DB Subnet Group, enabling **Multi-AZ deployment**.
+   
+      ## ⚒️ Components Used
+
+| Category | Component | Placement/Configuration |
+| :--- | :--- | :--- |
+| **Networking** | VPC | Single, $10.0.0.0/16$ |
+| | Subnets | Public (for ALBs/NAT), Private (Web, App, DB) |
+| | **Internet Gateway (IGW)** | Attached to VPC, for public traffic/NAT out |
+| | **NAT Gateway** | In one Public Subnet, for private $\to$ Internet traffic |
+| | Route Tables | Public, Private App, Private DB (Isolated) |
+| **Compute** | EC2 Frontend | Behind Frontend ALB (Web Tier) |
+| | EC2 Backend | Behind Backend ALB (App Tier) |
+| | **Auto Scaling Groups (ASG)** | For high availability and scalability of EC2 instances |
+| **Load Balancing** | Frontend ALB | Public Subnets, entry point for users |
+| | Backend ALB | Private Subnets, routes Web $\to$ App traffic |
+| **Database** | **RDS Multi-AZ** | Private DB Subnets, for high availability |
+| **Security** | Security Groups | Granular, rule-based traffic flow between tiers |
+| | **IAM Roles** | For EC2 (e.g., accessing CloudWatch, S3) |
     
