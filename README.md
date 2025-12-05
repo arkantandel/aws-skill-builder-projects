@@ -239,16 +239,15 @@ learning_outcomes:
   - RDS Multi-AZ reliability
   - AWS security best practices
 
-folder_structure: |
-  aws-skill-builder-projects/
-  ├── three-tier-architecture/
-  │   ├── README.md
-  │   ├── diagrams/
-  │   │   └── architecture.png
-  │   ├── terraform/
-  │   ├── cloudformation/
-  │   └── notes/
-  └── future-projects/
+aws-skill-builder-projects/
+├── three-tier-architecture/
+│   ├── README.md
+│   ├── diagrams/
+│   │   └── architecture.png
+│   ├── terraform/
+│   ├── cloudformation/
+│   └── notes/
+└── future-projects/
 
 future_enhancements:
   - Terraform automation
