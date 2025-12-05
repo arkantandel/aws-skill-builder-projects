@@ -80,11 +80,12 @@ flowchart TB
 
 ---
 
+# ✅ **Working Mermaid VPC Structure Diagram (Final Version)**  
 
-## VCP Structural Diagram
-
+```mermaid
 flowchart LR
-    VPC --> PUB1[Public Subnet 1]
+
+    VPC[VPC] --> PUB1[Public Subnet 1]
     VPC --> PUB2[Public Subnet 2]
 
     VPC --> PRI1[Private Subnet 1 - App]
@@ -99,6 +100,7 @@ flowchart LR
     PRI1 --> NAT[NAT Gateway]
     PRI2 --> NAT
 
+```
 
 ## 🧱 Architecture Overview
 ### **Tiers**
