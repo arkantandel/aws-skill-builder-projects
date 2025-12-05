@@ -176,4 +176,38 @@ This phase connects the tiers using ALBs and establishes the highly available da
 | **Database** | **RDS Multi-AZ** | Private DB Subnets, for high availability |
 | **Security** | Security Groups | Granular, rule-based traffic flow between tiers |
 | | **IAM Roles** | For EC2 (e.g., accessing CloudWatch, S3) |
+
+## 🎯 Learning Outcomes
+
+* **Multi-AZ VPC Design:** Implementing **high availability** by spanning resources across multiple Availability Zones.
+* **Subnet Tiering & Separation:** Understanding why resources are placed in **Public vs. Private** subnets (Web, App, DB).
+* **NAT vs. IGW Routing Logic:** Differentiating between inbound/outbound internet access for public and private resources.
+* **ALB → EC2 → Backend Flow:** Tracing the secure, **load-balanced traffic path** from the internet to the database.
+* **Backend to DB Secure Communication:** Enforcing the principle of **least privilege** using Security Groups.
+* **High Availability & Redundancy Practices:** Utilizing **ASG**, **Multi-AZ RDS**, and multiple subnets.
+* **AWS Security Best Practices:** Implementing proper **ingress/egress rules** via Security Groups.
+
+## 📁 Folder Structure
+
+  aws-skill-builder-projects/
+├── three-tier-architecture/
+│   ├── README.md
+│   ├── diagrams/
+│   │   └── architecture.png
+│   ├── terraform/
+│   ├── cloudformation/
+│   └── notes/
+└── future-projects/
+
+# Contact & Links
+
+**Name:** Arkan Tandel  
+
+**Email:** arkan@example.com  
+
+**LinkedIn:** https://www.linkedin.com/in/arkan-tandel  
+
+**GitHub:** https://github.com/arkan-tandel  
+
+
     
