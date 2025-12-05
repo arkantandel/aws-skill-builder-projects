@@ -66,6 +66,8 @@ flowchart TB
 ``` 
 # 🏗️ AWS Skill Builder Project — Three-Tier Architecture (Symbolic Overview)
 
+
+
 ## 📌 Project Metadata
 - **Name:** aws-skill-builder-projects  
 - **Title:** Three-Tier Architecture on AWS  
@@ -147,6 +149,22 @@ This phase configures how traffic enters the VPC (IGW) and how private resources
     * **Public Route Table:** Directs $0.0.0.0/0$ to the **Internet Gateway (IGW)**.
     * **Private App Route Table:** Directs $0.0.0.0/0$ to the **NAT Gateway**.
     * **Private DB Route Table:** Has **no** default route ($0.0.0.0/0$) to ensure complete isolation.
+
+```
+
+flowchart TD
+
+    IGW[Internet Gateway] --> RT_Public[Public Route Table<br>0.0.0.0/0 → IGW]
+    RT_Public --> PUB1[Public Subnet 1]
+    RT_Public --> PUB2[Public Subnet 2]
+
+    NAT[NAT Gateway] --> RT_Private[Private Route Table<br>0.0.0.0/0 → NAT]
+    RT_Private --> PRI1[Private Subnet 1 - App]
+    RT_Private --> PRI2[Private Subnet 2 - App]
+
+```
+
+      
 6.  **Associate Route Tables with Subnets:**
     * Associate **Public RT** with **Public Subnets**.
     * Associate **Private App RT** with **Private App Subnets**.
