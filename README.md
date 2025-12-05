@@ -152,8 +152,9 @@ This phase configures how traffic enters the VPC (IGW) and how private resources
     * **Private App Route Table:** Directs $0.0.0.0/0$ to the **NAT Gateway**.
     * **Private DB Route Table:** Has **no** default route ($0.0.0.0/0$) to ensure complete isolation.
 
-```
+## ✅ 3. Routing Logic Diagram
 
+```mermaid
 flowchart TD
 
     IGW[Internet Gateway] --> RT_Public[Public Route Table<br>0.0.0.0/0 → IGW]
