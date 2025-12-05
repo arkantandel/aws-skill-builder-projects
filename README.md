@@ -192,6 +192,40 @@ This phase defines the network security boundaries and prepares the compute reso
 
 ---
 
+## Mermaid Diagram: Security Groups + EC2 + Auto Scaling
+
+```mermied
+flowchart TB
+
+    %% ---------------------------
+    %% Security Groups
+    %% ---------------------------
+    INTERNET((Internet)) --> FE_ALB_SG[frontend_alb_sg<br>Allow 80 from 0.0.0.0/0]
+
+    FE_ALB_SG --> FE_SRV_SG[frontend_server_sg<br>Allow 80 only from FE ALB SG]
+
+    FE_SRV_SG --> BE_ALB_SG[backend_alb_sg<br>Allow 80 only from FE Server SG]
+
+    BE_ALB_SG --> BE_SRV_SG[backend_server_sg<br>Allow 80 only from BE ALB SG]
+
+    BE_SRV_SG --> DB_SG[database_sg<br>Allow 3306 only from Backend Server SG]
+
+
+    %% ---------------------------
+    %% Auto Scaling and EC2
+    %% ---------------------------
+    FE_SRV_SG --> FE_ASG[Frontend Auto Scaling Group]
+    FE_ASG --> FE_LT[Frontend Launch Template]
+
+    BE_SRV_SG --> BE_ASG[Backend Auto Scaling Group]
+    BE_ASG --> BE_LT[Backend Launch Template]
+
+    %% Database Node
+    DB_SG --> RDS[(Database Instance)]
+
+```
+
+
 ### Phase 4: Load Balancers and Database 💾
 This phase connects the tiers using ALBs and establishes the highly available database.
 
