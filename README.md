@@ -64,74 +64,89 @@ flowchart TB
     BE_SRV_A --> DB_A
     BE_SRV_B --> DB_B
 ``` 
-```yaml
-project:
-  name: "aws-skill-builder-projects"
-  title: "Three-Tier Architecture on AWS"
-  description: >
-    This project demonstrates how to deploy a highly available, secure, scalable 
-    Three-Tier Architecture on AWS using VPC, Subnets, Route Tables, ALB, EC2, 
-    NAT Gateways, and a Multi-AZ Database Tier.
+# 🏗️ AWS Skill Builder Project — Three-Tier Architecture (Symbolic Overview)
 
-architecture:
-  tiers:
-    - Web Tier (Public)
-    - App Tier (Private)
-    - Database Tier (Private Multi-AZ)
-  components:
-    - Frontend ALB
-    - Backend ALB
-    - EC2 Frontend Servers
-    - EC2 Backend Servers
-    - NAT Gateway
-    - Internet Gateway
-    - Security Groups
-    - Route Tables
+## 📌 Project Metadata
+- **Name:** aws-skill-builder-projects  
+- **Title:** Three-Tier Architecture on AWS  
+- **Description:** Highly available, secure, scalable 3-tier architecture using  
+  - VPC  
+  - Subnets  
+  - Route Tables  
+  - ALB  
+  - EC2  
+  - NAT Gateway  
+  - RDS Multi-AZ  
 
-diagram:
-  type: mermaid
-  code: |
-    flowchart TB
-        subgraph VPC["VPC (10.0.0.0/16)"]
-            subgraph AZA["Availability Zone A"]
-                PWA["public-web-subnet-a"]
-                PVA["private-web-subnet-a"]
-                PAA["private-app-subnet-a"]
-                PDA["private-db-subnet-a"]
-                FE_SRV_A["Frontend Server A"]
-                BE_SRV_A["Backend Server A"]
-                DB_A["DB-A (Multi-AZ)"]
-            end
+---
 
-            subgraph AZB["Availability Zone B"]
-                PWB["public-web-subnet-b"]
-                PVB["private-web-subnet-b"]
-                PAB["private-app-subnet-b"]
-                PDB["private-db-subnet-b"]
-                FE_SRV_B["Frontend Server B"]
-                BE_SRV_B["Backend Server B"]
-                DB_B["DB-B (Multi-AZ)"]
-            end
+## 🧱 Architecture Overview
+### **Tiers**
+- 🔹 Web Tier (Public)  
+- 🔹 App Tier (Private)  
+- 🔹 Database Tier (Private Multi-AZ)  
 
-            subgraph AZC["Availability Zone C"]
-                PWC["public-web-subnet-c"]
-                PVC["private-web-subnet-c"]
-                PAC["private-app-subnet-c"]
-                PDC["private-db-subnet-c"]
-            end
+### **Components**
+- 🌐 Frontend ALB  
+- 🔄 Backend ALB  
+- 💻 EC2 Frontend Servers  
+- 💻 EC2 Backend Servers  
+- 🚪 NAT Gateway  
+- 🌍 Internet Gateway  
+- 🔐 Security Groups  
+- 🛣️ Route Tables  
 
-            ALB_F["Frontend ALB"]
-            ALB_B["Backend ALB"]
+---
+
+## 📊 Mermaid Diagram (Symbolic)
+```mermaid
+flowchart TB
+    subgraph VPC["VPC (10.0.0.0/16)"]
+        subgraph AZA["AZ A"]
+            PWA["public-web-subnet-a"]
+            PVA["private-web-subnet-a"]
+            PAA["private-app-subnet-a"]
+            PDA["private-db-subnet-a"]
+
+            FE_SRV_A["Frontend A"]
+            BE_SRV_A["Backend A"]
+            DB_A["DB-A (AZ-A)"]
         end
 
-        ALB_F --> FE_SRV_A
-        ALB_F --> FE_SRV_B
-        FE_SRV_A --> ALB_B
-        FE_SRV_B --> ALB_B
-        ALB_B --> BE_SRV_A
-        ALB_B --> BE_SRV_B
-        BE_SRV_A --> DB_A
-        BE_SRV_B --> DB_B
+        subgraph AZB["AZ B"]
+            PWB["public-web-subnet-b"]
+            PVB["private-web-subnet-b"]
+            PAB["private-app-subnet-b"]
+            PDB["private-db-subnet-b"]
+
+            FE_SRV_B["Frontend B"]
+            BE_SRV_B["Backend B"]
+            DB_B["DB-B (AZ-B)"]
+        end
+
+        subgraph AZC["AZ C"]
+            PWC["public-web-subnet-c"]
+            PVC["private-web-subnet-c"]
+            PAC["private-app-subnet-c"]
+            PDC["private-db-subnet-c"]
+        end
+
+        ALB_F["Frontend ALB"]
+        ALB_B["Backend ALB"]
+    end
+
+    ALB_F --> FE_SRV_A
+    ALB_F --> FE_SRV_B
+
+    FE_SRV_A --> ALB_B
+    FE_SRV_B --> ALB_B
+
+    ALB_B --> BE_SRV_A
+    ALB_B --> BE_SRV_B
+
+    BE_SRV_A --> DB_A
+    BE_SRV_B --> DB_B
+```
 
 project_steps:
   - step: "Create VPC"
