@@ -1,322 +1,65 @@
+# 🏗️ Three-Tier Architecture on AWS  
+**Repository:** `aws-skill-builder-projects`
 
+This project demonstrates how to deploy a **highly available, secure, scalable Three-Tier Architecture** on AWS using VPC, Subnets, Route Tables, ALB, EC2, NAT Gateways, and Database Tier.
 
-# Three-Tier Architecture on AWS
-
-This repository contains a complete guide to building a *Highly Available Multi-AZ Three-Tier Architecture* on AWS using VPC, Subnets, Route Tables, NAT Gateway, Internet Gateway, EC2, ALB, Auto Scaling, and RDS.
-
----
-
-## Table of Contents
-1. Overview  
-2. Architecture Diagram (GitHub-Safe Mermaid)  
-3. Prerequisites  
-4. High-Level Steps  
-5. Step-by-Step Deployment  
-6. AWS CLI Commands  
-7. Security Groups Overview  
-8. Auto Scaling Overview  
-9. Troubleshooting  
-10. Production Checklist  
-11. References  
+The architecture contains:  
+- **Web Tier** → Public Subnets  
+- **App Tier** → Private Subnets  
+- **DB Tier** → Private Subnets (Multi-AZ)  
+- **Frontend ALB**, **Backend ALB**  
+- **NAT Gateway**, **IGW**  
+- **Security Groups**, **Routing**, **High-Availability** (3 AZ)
 
 ---
 
-# 1. Overview
-
-A *three-tier AWS architecture* separates your application into:
-
-### Web Tier
-- Internet-facing Application Load Balancer  
-- Frontend EC2 servers  
-- Public + private web subnets  
-
-### Application Tier
-- Backend application EC2 servers  
-- Private app subnets  
-
-### Database Tier
-- Amazon RDS Multi-AZ  
-- Private DB subnets  
-
-### Benefits
-- High Availability  
-- Scalability (Auto Scaling Groups)  
-- Security Isolation  
-- Multi-AZ resilience  
-
----
-
-
-3. Prerequisites
-
-AWS Account
-
-AWS CLI Installed
-
-IAM admin or power-user permissions
-
-SSH Key Pair
-
-Basic Linux knowledge
-
-
-
----
-
-4. High-Level Steps
-
-1. Create VPC
-
-
-2. Create public / private subnets
-
-
-3. Create route tables
-
-
-4. Create Internet Gateway
-
-
-5. Create NAT Gateway
-
-
-6. Add routes
-
-
-7. Create security groups
-
-
-8. Create DB subnet group
-
-
-9. Launch RDS
-
-
-10. Create Frontend ALB
-
-
-11. Create Backend ALB
-
-
-12. Create Frontend AMI
-
-
-13. Create Backend AMI
-
-
-14. Create Launch Templates
-
-
-15. Create Auto Scaling Groups
-
-
-16. Test application
-
-
-
-
----
-
-5. Step-by-Step Deployment
-
-
----
-
-Step 1: Create VPC
-
-CIDR: 10.0.0.0/16
-
-
----
-
-Step 2: Create Subnets
-
-Public Subnets
-
-public-web-subnet-a
-
-public-web-subnet-b
-
-public-web-subnet-c
-
-
-Private Web Subnets (Frontend)
-
-private-web-subnet-a
-
-private-web-subnet-b
-
-private-web-subnet-c
-
-
-Private App Subnets (Backend)
-
-private-app-subnet-a
-
-private-app-subnet-b
-
-private-app-subnet-c
-
-
-Private DB Subnets
-
-private-db-subnet-a
-
-private-db-subnet-b
-
-private-db-subnet-c
-
-
-
----
-
-Step 3: Route Tables
-
-Public Route Table
-
-0.0.0.0/0 → IGW
-
-
-Private Route Table
-
-0.0.0.0/0 → NAT Gateway
-
-
-
----
-
-Step 4: Internet Gateway
-
-Attach IGW to VPC.
-
-
----
-
-Step 5: NAT Gateway
-
-Create NAT in a public subnet.
-
-
----
-
-Step 6: Routing
-
-Subnet Type	Route
-
-Public	0.0.0.0/0 → IGW
-Private	0.0.0.0/0 → NAT GW
-
-
-
----
-
-7. Security Groups Overview
-
-Frontend ALB SG
-
-Allow: 80 / 443 from internet
-
-
-Frontend EC2 SG
-
-Allow: 80/443 from ALB SG
-
-
-Backend EC2 SG
-
-Allow: backend port (e.g., 8080) from Frontend SG
-
-
-DB SG
-
-Allow: DB port (3306 / 5432) from Backend SG
-
-
-
----
-
-8. Auto Scaling Overview
-
-Frontend Auto Scaling Group
-
-Uses private web subnets
-
-Attached to frontend target group
-
-
-Backend Auto Scaling Group
-
-Uses private app subnets
-
-Attached to backend target group
-
-
-
----
-
-9. Troubleshooting
-
-ALB shows “Unhealthy”
-
-Wrong SG
-
-Wrong port
-
-Application not running
-
-
-Backend cannot reach DB
-
-DB SG does not allow backend SG
-
-
-EC2 has no internet
-
-NAT not working
-
-Wrong route table
-
-
-
----
-
-10. Production Checklist
-
-[x] VPC created
-
-[x] Subnets created across AZs
-
-[x] IGW attached
-
-[x] NAT Gateway running
-
-[x] Route tables configured
-
-[x] Security groups correct
-
-[x] ALB healthy
-
-[x] Backend reachable
-
-[x] RDS reachable from backend only
-
-[x] ASG scaling correctly
-
-
-
----
-
-11. References
-
-AWS VPC Documentation
-
-AWS EC2 Documentation
-
-AWS RDS Documentation
-
-AWS ALB Documentation
-
-
-
----
-
+## 📌 **Architecture Overview (Mermaid Diagram)**
+
+```mermaid
+flowchart TB
+    subgraph VPC["VPC (10.0.0.0/16)"]
+        
+        subgraph AZA["Availability Zone A"]
+            PWA["public-web-subnet-a<br/>10.0.8.0/28"]
+            PVA["private-web-subnet-a<br/>10.0.48.0/28"]
+            PAA["private-app-subnet-a<br/>10.96.0.0/28"]
+            PDA["private-db-subnet-a<br/>10.144.0.0/28"]
+
+            FE_SRV_A["Frontend Server"]
+            BE_SRV_A["Backend Server"]
+            DB_A["Database (Multi-AZ node)"]
+        end
+
+        subgraph AZB["Availability Zone B"]
+            PWB["public-web-subnet-b<br/>10.8.16.0/28"]
+            PVB["private-web-subnet-b<br/>10.8.64.0/28"]
+            PAB["private-app-subnet-b<br/>10.112.0.0/28"]
+            PDB["private-db-subnet-b<br/>10.168.0.0/28"]
+
+            FE_SRV_B["Frontend Server"]
+            BE_SRV_B["Backend Server"]
+            DB_B["Database (Multi-AZ node)"]
+        end
+
+        subgraph AZC["Availability Zone C"]
+            PWC["public-web-subnet-c<br/>10.8.32.0/28"]
+            PVC["private-web-subnet-c<br/>10.8.88.0/28"]
+            PAC["private-app-subnet-c<br/>10.128.0.0/28"]
+            PDC["private-db-subnet-c<br/>10.184.0.0/28"]
+        end
+
+        ALB_F["Frontend ALB"]
+        ALB_B["Backend ALB"]
+    end
+
+    ALB_F --> FE_SRV_A
+    ALB_F --> FE_SRV_B
+
+    FE_SRV_A --> ALB_B
+    FE_SRV_B --> ALB_B
+
+    ALB_B --> BE_SRV_A
+    ALB_B --> BE_SRV_B
+
+    BE_SRV_A --> DB_A
+    BE_SRV_B --> DB_B
