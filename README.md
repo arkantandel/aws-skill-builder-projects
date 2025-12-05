@@ -1,3 +1,4 @@
+```yaml
 project:
   name: "aws-skill-builder-projects"
   title: "Three-Tier Architecture on AWS"
