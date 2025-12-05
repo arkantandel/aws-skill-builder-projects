@@ -228,6 +228,36 @@ This phase connects the tiers using ALBs and establishes the highly available da
     * Create a **DB Subnet Group** using the **Private DB Subnets**.
     * Launch the RDS instance (e.g., MySQL, PostgreSQL) into the DB Subnet Group, enabling **Multi-AZ deployment**.
    
+      ```mermaid
+flowchart TB
+
+    %% ---------------------------
+    %% Frontend Load Balancer Path
+    %% ---------------------------
+    INTERNET((Internet)) --> FE_ALB[Frontend ALB<br>Public Subnets]
+
+    FE_ALB --> FE_TG[Frontend Target Group]
+    FE_TG --> FE_ASG[Frontend Auto Scaling Group]
+    FE_ASG --> FE_EC2[Frontend EC2 Instances]
+
+
+    %% ---------------------------
+    %% Backend Load Balancer Path
+    %% ---------------------------
+    FE_EC2 --> BE_ALB[Backend ALB<br>Private App Subnets]
+
+    BE_ALB --> BE_TG[Backend Target Group]
+    BE_TG --> BE_ASG[Backend Auto Scaling Group]
+    BE_ASG --> BE_EC2[Backend EC2 Instances]
+
+
+    %% ---------------------------
+    %% Database Layer (Multi-AZ)
+    %% ---------------------------
+    BE_EC2 --> RDS[(RDS Database<br>Multi-AZ Enabled)]
+```
+```
+   
       ## ⚒️ Components Used
 
 | Category | Component | Placement/Configuration |
