@@ -323,39 +323,31 @@ flowchart TB
     %% ============================
     %% ALB → EC2 → Backend Flow
     %% ============================
-    IGW --> ALB[Application Load Balancer<br>Public Subnets (Multi-AZ)]
+    IGW --> ALB[Frontend ALB in Public Subnets]
 
     ALB --> FE_TG[Frontend Target Group]
     FE_TG --> FE_ASG[Frontend Auto Scaling Group]
-    FE_ASG --> FE_EC2[Frontend EC2 Instances]
+    FE_ASG --> FE_EC2[Frontend EC2 Nodes]
 
 
     %% ============================
-    %% Backend Tier Flow
+    %% Backend Flow
     %% ============================
-    FE_EC2 --> BE_TG[Backend Target Group]
+    FE_EC2 --> BE_ALB[Backend ALB in Private App Subnets]
+
+    BE_ALB --> BE_TG[Backend Target Group]
     BE_TG --> BE_ASG[Backend Auto Scaling Group]
-    BE_ASG --> BE_EC2[Backend EC2 Instances]
+    BE_ASG --> BE_EC2[Backend EC2 Nodes]
 
 
     %% ============================
-    %% Security Groups: Least Privilege
+    %% Database Layer
     %% ============================
-    INTERNET -. 80 .-> ALB_SG[frontend_alb_sg]
-    ALB_SG --> FE_SG[frontend_server_sg]
-    FE_SG --> BE_ALB_SG[backend_alb_sg]
-    BE_ALB_SG --> BE_SG[backend_server_sg]
-    BE_SG -. 3306 .-> DB_SG[database_sg]
-
-
-    %% ============================
-    %% Multi-AZ RDS Layer
-    %% ============================
-    BE_EC2 --> DB_SG
-    DB_SG --> RDS[(RDS Database<br>Multi-AZ)]
+    BE_EC2 --> RDS[(RDS Multi AZ Database)]
     RDS --> DB1
     RDS --> DB2
 ```
+
 
 ## 📁 Folder Structure
 
