@@ -50,51 +50,56 @@ flowchart TB
 subgraph VPC["VPC: 10.0.0.0/16"]
 direction TB
 
+    %% ------------------- AZ A -------------------
     subgraph AZA["Availability Zone A"]
-        subgraph PUBA["Public Web Subnet A (10.0.0.0/20)"]
+        subgraph PUBA["Public Web Subnet A"]
             ALB_A((ALB))
         end
-        subgraph PWA["Private Web Subnet A (10.0.48.0/20)"]
+        subgraph PWA["Private Web Subnet A"]
             FE_A[Frontend EC2]
         end
-        subgraph APA["Private App Subnet A (10.0.96.0/20)"]
+        subgraph APA["Private App Subnet A"]
             BE_A[Backend EC2]
         end
-        subgraph DBA["Private DB Subnet A (10.0.144.0/20)"]
+        subgraph DBA["Private DB Subnet A"]
             DB_A[(RDS Primary)]
         end
     end
 
+    %% ------------------- AZ B -------------------
     subgraph AZB["Availability Zone B"]
-        subgraph PUBB["Public Web Subnet B (10.0.16.0/20)"]
+        subgraph PUBB["Public Web Subnet B"]
             ALB_B((ALB))
         end
-        subgraph PWB["Private Web Subnet B (10.0.64.0/20)"]
+        subgraph PWB["Private Web Subnet B"]
             FE_B[Frontend EC2]
         end
-        subgraph APB["Private App Subnet B (10.0.112.0/20)"]
+        subgraph APB["Private App Subnet B"]
             BE_B[Backend EC2]
         end
-        subgraph DBB["Private DB Subnet B (10.0.160.0/20)"]
+        subgraph DBB["Private DB Subnet B"]
             DB_B[(RDS Standby)]
         end
     end
 
+    %% ------------------- AZ C -------------------
     subgraph AZC["Availability Zone C"]
-        subgraph PUBC["Public Web Subnet C (10.0.32.0/20)"]
+        subgraph PUBC["Public Web Subnet C"]
             ALB_C((ALB))
         end
-        subgraph PWC["Private Web Subnet C (10.0.80.0/20)"]
+        subgraph PWC["Private Web Subnet C"]
             FE_C[Frontend EC2]
         end
-        subgraph APC["Private App Subnet C (10.0.128.0/20)"]
+        subgraph APC["Private App Subnet C"]
             BE_C[Backend EC2]
         end
-        subgraph DBC["Private DB Subnet C (10.0.176.0/20)"]
+        subgraph DBC["Private DB Subnet C"]
             DB_C[(RDS Replica)]
         end
     end
 end
+
+%% ---------------- Connections ----------------
 
 ALB_A --> FE_A
 ALB_B --> FE_B
@@ -108,9 +113,10 @@ BE_A --> DB_A
 BE_B --> DB_B
 BE_C --> DB_C
 
-DB_A <--.-> DB_B
-DB_B <--.-> DB_C
-
+%% Multi-AZ DB arrows (GitHub-safe version)
+DB_A --> DB_B
+DB_B --> DB_C
+DB_C --> DB_A
 
 ---
 
