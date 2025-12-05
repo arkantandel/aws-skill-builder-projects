@@ -1,4 +1,5 @@
-# 🏗 Three-Tier Architecture on AWS  
+# 🏗 aws-skill-builder-projects
+ 
 *Repository:* aws-skill-builder-projects
 
 This project demonstrates how to deploy a *highly available, secure, scalable Three-Tier Architecture* on AWS using VPC, Subnets, Route Tables, ALB, EC2, NAT Gateways, and Database Tier.
