@@ -189,17 +189,17 @@ This phase connects the tiers using ALBs and establishes the highly available da
 
 ## 📁 Folder Structure
 
-
-
-aws-skill-builder-projects/
-└── three-tier-architecture/
-    ├── README.md
-    ├── diagrams/
-    │   └── architecture.png
-    ├── terraform/
-    ├── cloudformation/
-    ├── notes/
-    └── future-projects/
+| Folder / File           | Description |
+|-------------------------|-------------|
+| aws-skill-builder-projects/ | Root project folder |
+| └── three-tier-architecture/ | Main architecture project |
+| &nbsp;&nbsp;&nbsp;&nbsp;├── README.md | Main documentation |
+| &nbsp;&nbsp;&nbsp;&nbsp;├── diagrams/ | All diagrams |
+| &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;└── architecture.png | Architecture diagram |
+| &nbsp;&nbsp;&nbsp;&nbsp;├── terraform/ | Terraform IaC files |
+| &nbsp;&nbsp;&nbsp;&nbsp;├── cloudformation/ | CloudFormation templates |
+| &nbsp;&nbsp;&nbsp;&nbsp;├── notes/ | Study notes |
+| &nbsp;&nbsp;&nbsp;&nbsp;└── future-projects/ | Upcoming additions |
 
 
 # Contact & Links
