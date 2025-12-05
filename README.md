@@ -84,28 +84,6 @@ flowchart TB
 
 
 
-# ✅ **Working Mermaid VPC Structure Diagram (Final Version)**  
-
-```mermaid
-flowchart LR
-
-    VPC[VPC] --> PUB1[Public Subnet 1]
-    VPC --> PUB2[Public Subnet 2]
-
-    VPC --> PRI1[Private Subnet 1 - App]
-    VPC --> PRI2[Private Subnet 2 - App]
-
-    VPC --> DB1[Private Subnet 1 - DB]
-    VPC --> DB2[Private Subnet 2 - DB]
-
-    PUB1 --> IGW[Internet Gateway]
-    PUB2 --> IGW
-
-    PRI1 --> NAT[NAT Gateway]
-    PRI2 --> NAT
-
-```
-
 ## 🧱 Architecture Overview
 ### **Tiers**
 - 🔹 Web Tier (Public)  
@@ -139,6 +117,27 @@ This phase establishes the foundational network environment, ensuring resources 
 
 ---
 
+# ✅ **Working Mermaid VPC Structure Diagram (Final Version)**  
+
+```mermaid
+flowchart LR
+
+    VPC[VPC] --> PUB1[Public Subnet 1]
+    VPC --> PUB2[Public Subnet 2]
+
+    VPC --> PRI1[Private Subnet 1 - App]
+    VPC --> PRI2[Private Subnet 2 - App]
+
+    VPC --> DB1[Private Subnet 1 - DB]
+    VPC --> DB2[Private Subnet 2 - DB]
+
+    PUB1 --> IGW[Internet Gateway]
+    PUB2 --> IGW
+
+    PRI1 --> NAT[NAT Gateway]
+    PRI2 --> NAT
+
+```
 ### Phase 2: Connectivity & Routing 🛣️
 This phase configures how traffic enters the VPC (IGW) and how private resources can access the internet securely (NAT Gateway).
 
