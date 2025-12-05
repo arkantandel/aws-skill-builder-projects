@@ -80,6 +80,26 @@ flowchart TB
 
 ---
 
+
+## VCP Structural Diagram
+
+flowchart LR
+    VPC --> PUB1[Public Subnet 1]
+    VPC --> PUB2[Public Subnet 2]
+
+    VPC --> PRI1[Private Subnet 1 - App]
+    VPC --> PRI2[Private Subnet 2 - App]
+
+    VPC --> DB1[Private Subnet 1 - DB]
+    VPC --> DB2[Private Subnet 2 - DB]
+
+    PUB1 --> IGW[Internet Gateway]
+    PUB2 --> IGW
+
+    PRI1 --> NAT[NAT Gateway]
+    PRI2 --> NAT
+
+
 ## 🧱 Architecture Overview
 ### **Tiers**
 - 🔹 Web Tier (Public)  
