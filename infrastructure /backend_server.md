@@ -1,7 +1,7 @@
 # Follow these installation steps on the AMI EC2 instance:
 
 ## Install PHP, Apache, and MySQL client:
-https://docs.aws.amazon.com/linux/al2023/ug/ec2-lamp-amazon-linux-2023.html
+
 
 ## Install git:
 ```
