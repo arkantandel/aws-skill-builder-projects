@@ -1,0 +1,19 @@
+## PROJECTS
+
+### AWS Cloud Infrastructure with High Availability & Auto Scaling
+**Technologies:** AWS, VPC, EC2, Application Load Balancer (ALB), Auto Scaling Groups, RDS (Multi-AZ), NAT Gateway, Security Groups  
+
+- Designed and deployed a **highly available three-tier AWS cloud infrastructure** with Web, Application, and Database layers.
+- Implemented **multi-AZ VPC architecture** using public and private subnets to ensure **fault tolerance and scalability**.
+- Configured **frontend and backend Application Load Balancers** to securely distribute traffic across tiers.
+- Deployed **Auto Scaling Groups** for EC2 instances to handle dynamic workloads and maintain availability.
+- Established secure **network routing** using **Internet Gateway for inbound traffic** and **NAT Gateway for private subnet access**.
+- Provisioned **RDS Multi-AZ database** in private subnets to enable **automatic failover and data reliability**.
+- Applied **least-privilege security controls** using Security Groups following AWS best practices.
+
+---
+
+## HOT TOPICS (Keywords)
+
+AWS • Three-Tier Architecture • Multi-AZ VPC • Application Load Balancer (ALB) • Auto Scaling Groups •  
+NAT Gateway • RDS Multi-AZ • High Availability • Cloud Security • Scalability
